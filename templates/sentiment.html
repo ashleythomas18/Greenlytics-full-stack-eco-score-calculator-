@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentiment Gauge</title>
+    <link rel="stylesheet" href="/static/css/index.css">
+    <style>
+        :root {
+            --color-primary: hsl(160, 84%, 39%);
+            --color-primary-light: hsl(160, 84%, 95%);
+            --color-primary-dark: hsl(160, 84%, 25%);
+            --color-secondary: hsl(217, 91%, 60%);
+            --color-secondary-light: hsl(217, 91%, 95%);
+            --color-background: hsl(220, 13%, 8%);
+            --color-surface: hsl(220, 13%, 10%);
+            --color-surface-elevated: hsl(220, 13%, 12%);
+            --color-text-primary: hsl(220, 9%, 95%);
+            --color-text-secondary: hsl(220, 9%, 75%);
+            --color-text-muted: hsl(220, 9%, 60%);
+            --color-border: hsl(220, 13%, 20%);
+            --color-border-light: hsl(220, 13%, 15%);
+            --color-success: hsl(142, 76%, 36%);
+            --color-warning: hsl(38, 92%, 50%);
+            --color-error: hsl(0, 84%, 60%);
+            --space-xs: 0.25rem;
+            --space-sm: 0.5rem;
+            --space-md: 1rem;
+            --space-lg: 1.5rem;
+            --space-xl: 2rem;
+            --space-2xl: 3rem;
+            --space-3xl: 4rem;
+            --radius-md: 0.5rem;
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+            --transition-normal: 250ms ease-out;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: var(--color-background);
+            color: var(--color-text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        header {
+            background: var(--color-surface-elevated);
+            border-bottom: 1px solid var(--color-border-light);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: var(--space-md) var(--space-lg);
+        }
+
+        main {
+            padding: var(--space-lg);
+            text-align: center;
+        }
+
+        h2 {
+            color: var(--color-text-primary);
+            margin-bottom: var(--space-lg);
+        }
+
+        canvas {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<header>
+    <div class="logo">Greenlytics</div>
+    <nav>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/invoice-page">Upload Receipts</a></li>
+            <li><a href="/leaderboard-page">EcoPoint Leaderboard</a></li>
+            <li><a href="#" id="logoutBtn">Logout</a></li>
+        </ul>
+    </nav>
+</header>
+
+<main>
+    <h2>Sentiment Gauge</h2>
+    <canvas id="sentimentGauge" width="400" height="200"></canvas>
+
+    <h2>Eco Points Over Time</h2>
+    <canvas id="ecoPointsChart" width="400" height="200"></canvas>
+
+    <h2>User Engagement</h2>
+    <canvas id="userEngagementChart" width="400" height="200"></canvas>
+</main>
+
+<script>
+    async function fetchSentimentData() {
+        try {
+            const response = await fetch('/api/sentiment-data'); // Adjust the endpoint as needed
+            const data = await response.json();
+            
+            const ecoPositive = data.eco_positive || 0;
+            const neutral = data.neutral || 0;
+            const nonEco = data.non_eco || 0;
+
+            const ctx = document.getElementById('sentimentGauge').getContext('2d');
+            const sentimentGauge = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Eco-positive', 'Neutral', 'Non-eco'],
+                    datasets: [{
+                        data: [ecoPositive, neutral, nonEco],
+                        backgroundColor: ['green', 'yellow', 'red'],
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'User   Sentiment Analysis'
+                        }
+                    }
+                }
+            });
+        } catch (error) {
+            console.error('Error fetching sentiment data:', error);
+        }
+    }
+
+    async function fetchEcoPointsData() {
+        try {
+            const response = await fetch('/api/eco-points-data'); // New endpoint for eco points
+            const data = await response.json();
+            const ctx = document.getElementById('ecoPointsChart').getContext('2d');
+            const ecoPointsChart = new Chart(ctx, {
+                type: 'bar', // Change to 'bar' for better visualization of user data
+                data: {
+                    labels: data.labels, // User identifiers
+                    datasets: [{
+                        label: 'Eco Points',
+                        data: data.points, // Corresponding eco points for each user
+                        backgroundColor: 'blue',
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Eco Points by User'
+                        }
+                    }
+                }
+            });
+        } catch (error) {
+            console.error('Error fetching eco points data:', error);
+        }
+    }
+
+    async function fetchUserEngagementData() {
+        try {
+            const response = await fetch('/api/user-engagement-data'); // New endpoint for user engagement
+            const data = await response.json();
+            const ctx = document.getElementById('userEngagementChart').getContext('2d');
+            const userEngagementChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.labels, // User identifiers
+                    datasets: [{
+                        label: 'Engagement',
+                        data: data.engagement, // Corresponding engagement scores for each user
+                        backgroundColor: 'orange',
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'User  Engagement by User'
+                        }
+                    }
+                }
+            });
+        } catch (error) {
+            console.error('Error fetching user engagement data:', error);
+        }
+    }
+
+    // Fetch data when the page loads
+    window.onload = () => {
+        fetchSentimentData();
+        fetchEcoPointsData();
+        fetchUserEngagementData();
+    };
+</script>
+
+</body>
+</html>

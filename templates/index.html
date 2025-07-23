@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Greenlytics | Sustainable Fun</title>
+  <link rel="stylesheet" href="/static/css/index.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">Greenlytics</div>
+    
+    <nav>
+      <ul>
+        <li><a href="#">Home</a></li>
+        <li><a href="#">Features</a></li>
+        <li><a href="#">About</a></li>
+        <li><a href="#">Contact</a></li>
+        <li><a href="/static/index.html" id="logoutBtn">Logout</a></li>
+      </ul>
+    </nav>
+   
+  </header>
+
+  <main class="hero">
+     
+    <div class="hero-text">
+      <h2>Make Every Action Count</h2>
+       
+      <p class="subtext">Join our eco‑friendly community filled with fun, rewards & real impact.</p>
+      <button class="join-btn" onclick="window.location.href='/signup-page'">Join Now</button>
+    </div>
+    <div class="avatar-row">
+      <img src="/static/images/three-character.png" alt="Eco Avatar" class="eco-avatar-img" />
+    </div>
+  </main>
+
+  <section class="features-section">
+   <a href="/invoice-page" style="text-decoration: none;">
+  <div class="feature-card">
+    <h3>Upload Receipts</h3>
+    <p>Upload your receipt and earn EcoPoints.</p>
+  </div>
+</a>
+    <a href="/leaderboard-page" style="text-decoration: none;">
+    <div class="feature-card">
+      <h3>Leaderboard</h3>
+      <p>Look where you stand in the sustainability race.</p>
+    </div>
+    </a>
+<a href="http://localhost:8050" target="_blank" style="text-decoration: none;">
+  <div class="feature-card" id="sentimentGaugeCard">
+    <h3>Sentiment Gauge</h3>
+    <p>Real-time eco-conscious consumer behavior.</p>
+  </div>
+</a>
+
+
+  </section>
+
+
+  <footer>
+    © 2025 Greenlytics — Green living, made fun 
+    <small>
+      Background by 
+      <a href="https://unsplash.com/photos/a-lone-tree-on-a-grassy-hill-under-a-blue-sky-a37Utnfpwq0?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash" target="_blank">
+        Nadine Eggenberger
+      </a> on 
+      <a href="https://unsplash.com" target="_blank">Unsplash</a>
+    </small>
+  </footer>
+
+</body>
+<script>
+invoiceBtn.addEventListener('click', async () => {
+    const invoiceNumber = invoiceInput.value.trim();
+    if (!invoiceNumber) {
+        alert('Please enter an invoice number');
+        return;
+    }
+
+    invoiceBtn.innerHTML = '<div class="loading-spinner"></div><span>Processing...</span>';
+    invoiceBtn.disabled = true;
+
+    try {
+        const response = await fetch(`/invoice/${invoiceNumber}`);
+        const result = await response.json();
+
+        if (response.ok) {
+            invoiceBtn.innerHTML = '<span>Fetch EcoPoints</span>';
+            invoiceBtn.disabled = false;
+            invoiceSuccess.style.display = 'flex';
+
+            console.log('Total Eco Score:', result.total_score);
+
+            setTimeout(() => {
+                invoiceSuccess.style.display = 'none';
+            }, 3000);
+        } else {
+            alert(result.error || 'Invoice not found');
+            invoiceBtn.innerHTML = '<span>Fetch EcoPoints</span>';
+            invoiceBtn.disabled = false;
+        }
+
+    } catch (error) {
+        console.error(error);
+        alert('Server error');
+        invoiceBtn.innerHTML = '<span>Fetch EcoPoints</span>';
+        invoiceBtn.disabled = false;
+    }
+});
+
+async function handleLogin() {
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+
+    const response = await fetch('/login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+    });
+
+    if (response.ok) {
+        const data = await response.json();
+        // Update the UI to show the welcome message
+        document.getElementById('welcomeMessage').innerText = `Welcome Back, ${data.user_name}!`;
+        // Optionally redirect to another page
+        window.location.href = '/dashboard'; // Redirect to the dashboard or another page
+    } else {
+        const error = await response.json();
+        alert(error.error); // Show error message
+    }
+}
+
+
+// Function to open the gauge modal
+function openGauge() {
+    document.getElementById('gaugeModal').style.display = 'flex';
+    fetchSentimentData();
+}
+
+// Function to close the gauge modal
+function closeGauge() {
+    document.getElementById('gaugeModal').style.display = 'none';
+}
+
+// Fetch sentiment data from the backend
+async function fetchSentimentData() {
+    try {
+        const response = await fetch('/api/sentiment-data'); // Adjust the endpoint as needed
+        const data = await response.json();
+        
+        const ecoPositive = data.eco_positive || 0;
+        const neutral = data.neutral || 0;
+        const nonEco = data.non_eco || 0;
+
+        const ctx = document.getElementById('sentimentGauge').getContext('2d');
+        const sentimentGauge = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Eco-positive', 'Neutral', 'Non-eco'],
+                datasets: [{
+                    data: [ecoPositive, neutral, nonEco],
+                    backgroundColor: ['green', 'yellow', 'red'],
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'User  Sentiment Analysis'
+                    }
+                }
+            }
+        });
+    } catch (error) {
+        console.error('Error fetching sentiment data:', error);
+    }
+}
+
+// Add event listener to the sentiment gauge card
+document.getElementById('sentimentGaugeCard').addEventListener('click', openGauge);
+</script>
+
+</html>
+

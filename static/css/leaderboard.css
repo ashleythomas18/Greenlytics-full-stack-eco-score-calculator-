@@ -1,0 +1,131 @@
+/* General Page Styling */
+body {
+  font-family: 'Nunito', sans-serif;
+  background: #39ed8a;
+  background-size: cover;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  padding: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-size: 35px;
+  font-weight: bold;
+  color: #f3e7e7;
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+  gap: 24px;
+}
+
+nav a {
+  text-decoration: none;
+  color: #e8f5e9;
+  font-weight: 700;
+  font-size: 1.4rem;
+  transition: color 0.3s;
+}
+
+nav a:hover {
+  color: #c8e6c9;
+}
+
+/* Leaderboard Heading */
+h1 {
+  text-align: center;
+  margin: 40px 0 20px;
+  font-size: 2.8rem;
+  color: #ffffff;
+  text-shadow: 1px 1px 2px #000;
+}
+
+/* Leaderboard Container */
+.leaderboard {
+  width: 1000px;
+  margin: 0 auto 60px;
+  padding: 0 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Leaderboard Card */
+.user-card {
+  background: rgba(255, 255, 255, 0.95);
+  padding: 24px;
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #2e7d32;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.user-card:hover {
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+}
+
+.highlight {
+  border: 3px solid #388e3c;
+  background: rgba(240, 255, 240, 0.95);
+}
+
+/* League Badges */
+.tier-badge {
+  font-weight: bold;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 1rem;
+  text-transform: uppercase;
+}
+
+.Gold .tier-badge {
+  background: linear-gradient(to right, gold, #f0c929);
+  color: #333;
+}
+
+.Silver .tier-badge {
+  background: linear-gradient(to right, silver, #d1d1d1);
+  color: #333;
+}
+
+.Bronze .tier-badge {
+  background: linear-gradient(to right, #cd7f32, #b87333);
+  color: white;
+}
+
+.current-user {
+  border: 3px solid #4caf50;
+  background-color: rgba(76, 175, 80, 0.07);
+  font-weight: 700;
+}
+
+
+@media (max-width: 768px) {
+  h1 {
+    font-size: 2.2rem;
+  }
+
+  .user-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .tier-badge {
+    align-self: flex-end;
+  }
+}

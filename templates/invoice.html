@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="en" class="dark-mode">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Greenlytics - Upload Receipt</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --color-primary: hsl(160, 84%, 39%);
+            --color-primary-light: hsl(160, 84%, 8%);
+            --color-primary-hover: hsl(160, 84%, 45%);
+            --color-primary-muted: hsl(160, 84%, 25%);
+            --color-secondary: hsl(217, 91%, 60%);
+            --color-secondary-light: hsl(217, 91%, 8%);
+            --color-background: hsl(220, 13%, 8%);
+            --color-surface: hsl(220, 13%, 10%);
+            --color-surface-elevated: hsl(220, 13%, 12%);
+            --color-surface-hover: hsl(220, 13%, 14%);
+            --color-text-primary: hsl(220, 9%, 95%);
+            --color-text-secondary: hsl(220, 9%, 75%);
+            --color-text-muted: hsl(220, 9%, 60%);
+            --color-border: hsl(220, 13%, 20%);
+            --color-border-light: hsl(220, 13%, 15%);
+            --color-success: hsl(142, 76%, 36%);
+            --color-warning: hsl(38, 92%, 50%);
+            --color-error: hsl(0, 84%, 60%);
+            --color-upload-bg: hsl(160, 30%, 12%);
+            --color-upload-border: hsl(160, 84%, 30%);
+            --color-upload-hover: hsl(160, 40%, 15%);
+            --space-xs: 0.25rem;
+            --space-sm: 0.5rem;
+            --space-md: 1rem;
+            --space-lg: 1.5rem;
+            --space-xl: 2rem;
+            --space-2xl: 3rem;
+            --space-3xl: 4rem;
+            --radius-sm: 0.375rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --radius-xl: 1rem;
+            --radius-2xl: 1.5rem;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
+            --shadow-glow: 0 0 20px rgba(16, 185, 129, 0.3);
+            --transition-fast: 150ms ease-out;
+            --transition-normal: 250ms ease-out;
+            --transition-slow: 350ms ease-out;
+            --gradient-primary: linear-gradient(135deg, var(--color-primary) 0%, hsl(160, 84%, 50%) 100%);
+            --gradient-surface: linear-gradient(135deg, var(--color-surface) 0%, var(--color-surface-elevated) 100%);
+        }
+
+        body.light-mode {
+            --color-primary-light: hsl(160, 84%, 95%);
+            --color-secondary-light: hsl(217, 91%, 95%);
+            --color-background: hsl(0, 0%, 100%);
+            --color-surface: hsl(0, 0%, 98%);
+            --color-surface-elevated: hsl(0, 0%, 100%);
+            --color-surface-hover: hsl(0, 0%, 96%);
+            --color-text-primary: hsl(220, 9%, 9%);
+            --color-text-secondary: hsl(220, 9%, 46%);
+            --color-text-muted: hsl(220, 9%, 60%);
+            --color-border: hsl(220, 13%, 91%);
+            --color-border-light: hsl(220, 13%, 96%);
+            --color-upload-bg: hsl(160, 84%, 98%);
+            --color-upload-border: hsl(160, 84%, 70%);
+            --color-upload-hover: hsl(160, 84%, 95%);
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --shadow-glow: 0 0 20px rgba(16, 185, 129, 0.1);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, var(--color-primary-light) 0%, var(--color-background) 50%, var(--color-secondary-light) 100%);
+            color: var(--color-text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            transition: background var(--transition-normal), color var(--transition-normal);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 var(--space-md);
+        }
+
+        .header {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--color-border-light);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            transition: background var(--transition-normal);
+        }
+
+        body.light-mode .header {
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 4rem;
+            padding: 0 var(--space-md);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+
+        .logo-icon {
+            width: 2rem;
+            height: 2rem;
+            border-radius: var(--radius-md);
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--color-primary);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: var(--space-lg);
+        }
+
+        .nav-link {
+            color: var(--color-text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color var(--transition-fast);
+            position: relative;
+        }
+
+        .nav-link:hover {
+            color: var(--color-primary);
+        }
+
+        .nav-link.active {
+            color: var(--color-primary);
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1rem;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--color-primary);
+            border-radius: 1px;
+        }
+
+        .main {
+            padding: var(--space-3xl) 0;
+        }
+
+        .hero {
+            text-align: center;
+            margin-bottom: var(--space-3xl);
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .hero-title {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 700;
+            color: var(--color-text-primary);
+            margin-bottom: var(--space-md);
+            line-height: 1.2;
+        }
+
+        .hero-title span {
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: var(--color-text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+            opacity: 0.9;
+        }
+
+        .upload-methods {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-2xl);
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .method-card {
+            background: var(--gradient-surface);
+            backdrop-filter: blur(12px);
+            border-radius: var(--radius-2xl);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--color-border-light);
+            transition: all var(--transition-normal);
+            overflow: hidden;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .method-card:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .method-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+            border-color: var(--color-primary-muted);
+        }
+
+        .card-header {
+            text-align: center;
+            padding: var(--space-xl) var(--space-xl) var(--space-lg);
+            background: linear-gradient(135deg, var(--color-surface-elevated) 0%, var(--color-surface) 100%);
+            border-bottom: 1px solid var(--color-border-light);
+        }
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-sm);
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--color-text-primary);
+        }
+
+        .card-title .icon {
+            font-size: 1.5rem;
+            color: var(--color-primary);
+        }
+
+        .card-content {
+            padding: var(--space-xl);
+        }
+
+        .input-section {
+            margin-bottom: var(--space-lg);
+        }
+
+        .input-label {
+            display: block;
+            font-weight: 500;
+            color: var(--color-text-primary);
+            margin-bottom: var(--space-md);
+            font-size: 1rem;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            border: 2px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            font-size: 1.125rem;
+            background: var(--color-surface);
+            transition: all var(--transition-normal);
+            color: var(--color-text-primary);
+            position: relative;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+            background: var(--color-surface-elevated);
+        }
+
+        .submit-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-sm);
+            padding: 1rem 2rem;
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius-lg);
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            width: 100%;
+            margin-top: var(--space-md);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .separator {
+            display: flex;
+            align-items: center;
+            margin: var(--space-2xl) 0;
+            animation: fadeInUp 0.8s ease-out 0.4s both;
+        }
+
+        .separator-line {
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--color-border), transparent);
+        }
+
+        .separator-text {
+            padding: 0 var(--space-md);
+            background: var(--color-surface);
+            color: var(--color-text-muted);
+            font-weight: 500;
+            border-radius: var(--radius-xl);
+            padding: var(--space-sm) var(--space-md);
+            border: 1px solid var(--color-border-light);
+            font-size: 0.875rem;
+        }
+
+        .upload-area {
+            position: relative;
+            border: 2px dashed var(--color-upload-border);
+            border-radius: var(--radius-2xl);
+            background: var(--color-upload-bg);
+            padding: var(--space-3xl) var(--space-xl);
+            text-align: center;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .upload-area:hover:not(.disabled) {
+            background: var(--color-upload-hover);
+            border-color: var(--color-primary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .upload-area.dragover {
+            background: var(--color-upload-hover);
+            border-color: var(--color-primary);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .upload-content {
+            pointer-events: none;
+        }
+
+        .upload-icon {
+            color: var(--color-primary);
+            margin-bottom: var(--space-md);
+            font-size: 3rem;
+            opacity: 0.8;
+        }
+
+        .upload-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--color-text-primary);
+            margin-bottom: var(--space-xs);
+        }
+
+        .upload-subtitle {
+            color: var(--color-text-muted);
+            font-size: 0.875rem;
+            margin-bottom: var(--space-xs);
+        }
+
+        .upload-formats {
+            color: var(--color-text-muted);
+            font-size: 0.75rem;
+            opacity: 0.7;
+        }
+
+        .file-input {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .info-section {
+            margin-top: var(--space-3xl);
+            animation: fadeInUp 0.8s ease-out 0.6s both;
+        }
+
+        .info-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--space-lg);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .info-card {
+            padding: var(--space-xl);
+            border-radius: var(--radius-xl);
+            border: 1px solid;
+            transition: all var(--transition-normal);
+            background: var(--gradient-surface);
+            backdrop-filter: blur(8px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .info-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gradient-primary);
+            opacity: 0;
+            transition: opacity var(--transition-normal);
+        }
+
+        .info-card:hover::before {
+            opacity: 1;
+        }
+
+        .info-card-green {
+            border-color: var(--color-primary-muted);
+        }
+
+        .info-card-blue {
+            border-color: hsl(217, 91%, 25%);
+        }
+
+        body.light-mode .info-card-blue {
+            border-color: hsl(217, 91%, 85%);
+        }
+
+        .info-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--color-primary);
+        }
+
+        .info-icon {
+            font-size: 2rem;
+            margin-bottom: var(--space-md);
+            color: var(--color-primary);
+        }
+
+        .info-title {
+            font-weight: 600;
+            font-size: 1.125rem;
+            margin-bottom: var(--space-md);
+            color: var(--color-text-primary);
+        }
+
+        .info-text {
+            font-size: 0.9rem;
+            color: var(--color-text-secondary);
+            line-height: 1.6;
+        }
+
+        .success-message {
+            background: linear-gradient(135deg, var(--color-success) 0%, hsl(142, 76%, 50%) 100%);
+            color: white;
+            padding: var(--space-md);
+            border-radius: var(--radius-lg);
+            margin-top: var(--space-md);
+            display: none;
+            align-items: center;
+            gap: var(--space-sm);
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .loading-spinner {
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: 2px solid white;
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            animation: spin 1s linear infinite;
+        }
+#invoice-results {
+    background: linear-gradient(135deg, 
+                hsla(160, 84%, 12%, 0.8) 0%, 
+                var(--color-surface-elevated) 100%);
+    border-radius: var(--radius-2xl);
+    padding: var(--space-xl);
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--color-primary-muted);
+    margin: var(--space-xl) auto;
+    width: 90%;
+    max-width: 800px;
+    backdrop-filter: blur(8px);
+    animation: fadeInUp 0.6s ease-out;
+    position: relative;
+    overflow: hidden;
+}
+
+#invoice-results::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--gradient-primary);
+}
+
+#invoice-results h3 {
+    color: var(--color-primary);
+    margin-bottom: var(--space-md);
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+#invoice-results h3::before {
+    content: '📋';
+    font-size: 1.2em;
+}
+
+#invoice-results p {
+    margin-bottom: var(--space-sm);
+    display: flex;
+    gap: var(--space-sm);
+}
+
+#invoice-results p strong {
+    color: var(--color-text-secondary);
+    min-width: 120px;
+}
+
+.product-list {
+    margin-top: var(--space-lg);
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: var(--radius-lg);
+    padding: var(--space-md);
+}
+
+.product-item {
+    padding: var(--space-md);
+    border-bottom: 1px solid var(--color-border-light);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    transition: background var(--transition-fast);
+}
+
+.product-item:hover {
+    background: rgba(16, 185, 129, 0.05);
+}
+
+.product-item:last-child {
+    border-bottom: none;
+}
+
+.product-name {
+    font-weight: 500;
+}
+
+.eco-score-badge {
+    background: var(--color-primary-muted);
+    color: white;
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    font-size: 0.9rem;
+    min-width: 60px;
+    text-align: center;
+}
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .processing {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 var(--space-sm);
+            }
+            
+            .upload-methods {
+                max-width: 100%;
+            }
+            
+            .info-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .hero-title {
+                font-size: 2rem;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">🌱</div>
+                <div class="logo-text">Greenlytics</div>
+            </div>
+            <nav class="nav-links">
+                <a href="#" class="nav-link active">Upload</a>
+                <a href="#" class="nav-link">Dashboard</a>
+                <a href="#" class="nav-link">Rewards</a>
+            </nav>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="main">
+            <div class="hero">
+                <h1 class="hero-title">Earn <span>EcoPoints</span> for Sustainable Shopping</h1>
+                <p class="hero-subtitle">Submit your receipt and discover how your eco-friendly purchases make a difference</p>
+            </div>
+
+            <div class="upload-methods">
+                <div class="method-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <span class="icon">📋</span>
+                            Invoice Number
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="input-section">
+                            <label class="input-label">Enter Invoice Number</label>
+                            <input type="text" class="input-field" placeholder="Enter your invoice number..." value="1222">
+                            <button class="submit-btn" id="invoice-btn">
+                                <span>Fetch EcoPoints</span>
+                            </button>
+                            <div class="success-message" id="invoice-success">
+                                <span>✅</span>
+                                <span>Invoice processed successfully!</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="container" id="invoice-results" style="display: none; margin-top: 2rem;">
+    <h3>Invoice: <span id="invoice-number-display"></span></h3>
+    <p><strong>Store:</strong> <span id="store-name"></span></p>
+    <p><strong>Date:</strong> <span id="invoice-date"></span></p>
+    <p><strong>Total Eco Score:</strong> <span id="eco-score"></span></p>
+    <p><strong>Average Score:</strong> <span id="avg-score"></span></p>
+    <div id="product-list"></div>
+  </div>
+  <div id="invoice-result" style="margin-top: 2rem; color: var(--color-text-primary);"></div>
+
+                <div class="separator">
+                    <div class="separator-line"></div>
+                    <div class="separator-text">OR</div>
+                    <div class="separator-line"></div>
+                </div>
+
+                <div class="method-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <span class="icon">📤</span>
+                            Upload Receipt
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="upload-area" id="upload-area">
+                            <div class="upload-content">
+                                <div class="upload-icon">📄</div>
+                                <div class="upload-title">Drop your receipt here</div>
+                                <div class="upload-subtitle">or click to browse files</div>
+                                <div class="upload-formats">JPEG, PNG or PDF (MAX. 10MB)</div>
+                            </div>
+                            <input type="file" class="file-input" id="file-input" accept=".jpg,.jpeg,.png,.pdf" />
+                        </div>
+                        <div class="success-message" id="upload-success">
+                            <span>✅</span>
+                            <span>File uploaded successfully!</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-section">
+                <div class="info-cards">
+                    <div class="info-card info-card-green">
+                        <div class="info-icon">🔍</div>
+                        <div class="info-title">Smart Analysis</div>
+                        <div class="info-text">Our AI analyzes your purchases and awards EcoPoints for sustainable, organic, and eco-friendly products automatically.</div>
+                    </div>
+                    <div class="info-card info-card-blue">
+                        <div class="info-icon">🎁</div>
+                        <div class="info-title">Unlock Rewards</div>
+                        <div class="info-text">Collect EcoPoints to unlock exclusive tiers with special discounts, priority services, and sustainable product recommendations.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+     
+
+
+    <script>
+        // Invoice handling
+        const invoiceInput = document.querySelector('.input-field');
+        const invoiceBtn = document.getElementById('invoice-btn');
+        const invoiceSuccess = document.getElementById('invoice-success');
+
+        invoiceInput.addEventListener('click', () => {
+            if (invoiceInput.value === '1222') {
+                invoiceInput.value = '';
+            }
+        });
+
+invoiceBtn.addEventListener('click', async () => {
+    const invoiceNumber = invoiceInput.value.trim();
+
+    if (!invoiceNumber) {
+        alert('Please enter an invoice number');
+        return;
+    }
+
+    invoiceBtn.innerHTML = '<div class="loading-spinner"></div><span>Processing...</span>';
+    invoiceBtn.disabled = true;
+
+    try {
+        const response = await fetch(`/invoice/${invoiceNumber}`);
+        const result = await response.json();
+
+        if (response.ok) {
+            invoiceSuccess.style.display = 'flex';
+            console.log("Invoice details:", result);
+            
+            // Display the results
+            displayInvoiceResults(result);
+        } else {
+            alert(result.error || 'Invoice not found');
+        }
+    } catch (err) {
+        console.error("Fetch failed:", err);
+        alert("Network/server error");
+    } finally {
+        invoiceBtn.innerHTML = '<span>Fetch EcoPoints</span>';
+        invoiceBtn.disabled = false;
+
+        setTimeout(() => {
+            invoiceSuccess.style.display = 'none';
+        }, 3000);
+    }
+});
+
+function displayInvoiceResults(data) {
+    const resultsContainer = document.getElementById('invoice-results');
+    const productList = document.getElementById('product-list');
+    
+    // Update the display elements
+    document.getElementById('invoice-number-display').textContent = data.invoice_number;
+    document.getElementById('store-name').textContent = data.store;
+    document.getElementById('invoice-date').textContent = data.date;
+    document.getElementById('eco-score').textContent = data.total_score;
+    document.getElementById('avg-score').textContent = data.average_score;
+    
+    // Clear previous products
+    productList.innerHTML = '';
+    
+    // Add each product to the list
+    data.products.forEach(product => {
+        const productDiv = document.createElement('div');
+        productDiv.className = 'product-item';
+        productDiv.innerHTML = `
+            <span class="product-name">${product.name}</span>
+            <span class="eco-score-badge">${product.eco_score}</span>
+            ${product.note ? `<small style="grid-column: 1/-1; margin-top: 0.5rem; color: var(--color-text-muted)">${product.note}</small>` : ''}
+        `;
+        productList.appendChild(productDiv);
+    });
+    
+    // Show the results container
+    resultsContainer.style.display = 'block';
+}
+        // File upload handling
+        const uploadArea = document.getElementById('upload-area');
+        const fileInput = document.getElementById('file-input');
+        const uploadSuccess = document.getElementById('upload-success');
+
+        uploadArea.addEventListener('click', () => fileInput.click());
+
+        // Drag and drop functionality
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                handleFile(file);
+            }
+        });
+
+        function handleFile(file) {
+            const maxSize = 10 * 1024 * 1024; // 10MB
+            const validTypes = ['image/jpeg', 'image/png', 'application/pdf'];
+
+            if (!validTypes.includes(file.type)) {
+                alert('Please upload a valid file type (JPEG, PNG, or PDF)');
+                return;
+            }
+
+            if (file.size > maxSize) {
+                alert('File size exceeds 10MB limit. Please choose a smaller file.');
+                return;
+            }
+
+            // Show processing state
+            uploadArea.classList.add('processing');
+            const uploadContent = uploadArea.querySelector('.upload-content');
+            uploadContent.innerHTML = `
+                <div class="upload-icon">⏳</div>
+                <div class="upload-title">Processing ${file.name}</div>
+                <div class="upload-subtitle">Please wait...</div>
+            `;
+
+            // Simulate upload
+            setTimeout(() => {
+                uploadArea.classList.remove('processing');
+                uploadContent.innerHTML = `
+                    <div class="upload-icon">✅</div>
+                    <div class="upload-title">Upload Complete</div>
+                    <div class="upload-subtitle">${file.name}</div>
+                `;
+                
+                uploadSuccess.style.display = 'flex';
+                
+                // Reset after 3 seconds
+                setTimeout(() => {
+                    uploadSuccess.style.display = 'none';
+                    uploadContent.innerHTML = `
+                        <div class="upload-icon">📄</div>
+                        <div class="upload-title">Drop your receipt here</div>
+                        <div class="upload-subtitle">or click to browse files</div>
+                        <div class="upload-formats">JPEG, PNG or PDF (MAX. 10MB)</div>
+                    `;
+                }, 3000);
+            }, 2000);
+        }
+
+        // Add some entrance animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        });
+
+        document.querySelectorAll('.method-card, .info-card').forEach(el => {
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>

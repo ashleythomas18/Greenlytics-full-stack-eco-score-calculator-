@@ -1,0 +1,52 @@
+body {
+      margin: 0;
+      font-family: 'Nunito', sans-serif;
+       background: url('../images/background.jpg') no-repeat center center fixed;
+      background-size: cover;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .form-container {
+      background-color: rgba(255, 255, 255, 0.9);
+      padding: 2rem;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      width: 350px;
+      text-align: center;
+    }
+    h1{
+        color: rgb(22, 84, 22) 
+    }
+    h2 {
+      color: #1f2937;
+      margin-bottom: 1rem;
+    }
+    input {
+      width: 90%;
+      padding: 0.8rem;
+      margin: 0.5rem 0;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+    }
+    button {
+      margin-top: 1rem;
+      background-color: #1c7353;
+      border: none;
+      padding: 0.8rem 1.5rem;
+      font-size: 1rem;
+      font-weight: bold;
+      border-radius: 25px;
+      cursor: pointer;
+      color: white;
+    }
+    p {
+      margin-top: 1rem;
+      font-size: 0.9rem;
+    }
+    a {
+      color: #0f4d36;
+      text-decoration: none;
+    }

@@ -1,0 +1,188 @@
+body {
+  margin: 0;
+  font-family: 'Nunito', sans-serif;
+  background-color: #224d35;
+  color: #1f1f1f;
+}
+
+
+/* Navbar */
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 20px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 1000;
+}
+
+.logo {
+  font-size: 32px;
+  font-weight: bold;
+  color: #ffffff;
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+  gap: 24px;
+}
+
+nav a {
+  text-decoration: none;
+  color: #e8f5e9;
+  font-weight: 700;
+  font-size: 1.4rem;
+  transition: color 0.3s;
+}
+
+nav a:hover {
+  color: #c8e6c9;
+}
+
+/* Main Content */
+.upload-wrapper {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+  padding: 100px 20px 30px; 
+}
+
+.upload-wrapper h1 {
+  font-size: 2rem;
+  color: #ffffff;
+  text-shadow: 1px 1px 2px #000;
+  margin-top: 0;
+}
+
+.subtitle {
+  font-size: 1rem;
+  color: #eeeeee;
+  margin-bottom: 30px;
+}
+
+/* Upload Card */
+.upload-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 30px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
+}
+
+.upload-card h2 {
+  color: #1c7353;
+  margin-bottom: 20px;
+}
+
+.invoice-row {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.invoice-row input {
+  flex: 1;
+  padding: 0.8rem;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  min-width: 250px;
+}
+
+.invoice-row button {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 0.8rem 1.2rem;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.divider {
+  margin: 20px 0;
+  font-weight: bold;
+  color: #999;
+}
+
+.upload-box {
+  border: 2px dashed #81c784;
+  padding: 20px;
+  border-radius: 12px;
+  background: #f1fef1;
+  margin-top: 10px;
+}
+
+.upload-box input[type="file"] {
+  border: none;
+  margin-bottom: 12px;
+}
+
+.upload-box p {
+  margin: 0;
+  font-weight: bold;
+  color: #1c7353;
+}
+
+.upload-box small {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+/* Info Cards */
+.info-cards {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.info-card {
+  padding: 20px;
+  border-radius: 12px;
+  width: 300px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.info-card h4 {
+  margin-bottom: 10px;
+}
+
+.info-card.green {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.info-card.blue {
+  background-color: #e3f2fd;
+  color: #0d47a1;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .invoice-row {
+    flex-direction: column;
+  }
+
+  .invoice-row input,
+  .invoice-row button {
+    width: 100%;
+  }
+
+  .upload-wrapper {
+    padding: 120px 20px 40px;
+  }
+
+  nav ul {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .logo {
+    font-size: 24px;
+  }
+}

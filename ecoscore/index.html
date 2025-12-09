@@ -1,0 +1,1005 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoScore - Bill Upload</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .upload-section {
+            margin-bottom: 30px;
+        }
+
+        .upload-area {
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #fafafa;
+        }
+
+        .upload-area:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .upload-area.dragover {
+            border-color: #667eea;
+            background: #e8f0fe;
+        }
+
+        .upload-icon {
+            font-size: 3em;
+            color: #ccc;
+            margin-bottom: 20px;
+        }
+
+        .upload-text {
+            color: #666;
+            font-size: 1.1em;
+            margin-bottom: 15px;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .upload-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .upload-btn:hover {
+            background: #5a67d8;
+        }
+
+        .file-preview {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .file-details {
+            display: flex;
+            align-items: center;
+        }
+
+        .file-icon {
+            font-size: 1.5em;
+            margin-right: 10px;
+        }
+
+        .remove-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+        .submit-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 25px;
+            font-size: 1.1em;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+            transition: background 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            background: #218838;
+        }
+
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .results {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .results h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .invoice-info {
+            margin-bottom: 15px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .products-list {
+            display: grid;
+            gap: 10px;
+        }
+
+        .product-item {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .supported-formats {
+            text-align: center;
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌱 EcoScore</h1>
+            <p>Upload your bill to extract product names and invoice number for environmental impact scoring</p>
+        </div>
+
+        <form id="uploadForm">
+            <div class="upload-section">
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon">📄</div>
+                    <div class="upload-text">
+                        <strong>Click to upload</strong> or drag and drop your bill here
+                    </div>
+                    <button type="button" class="upload-btn" onclick="document.getElementById('fileInput').click()">
+                        Choose File
+                    </button>
+                    <input type="file" id="fileInput" class="file-input" accept=".pdf,.jpg,.jpeg,.png,.gif,.bmp,.tiff" required>
+                </div>
+                
+                <div class="supported-formats">
+                    Supported formats: PDF, JPG, PNG, GIF, BMP, TIFF
+                </div>
+
+                <div class="file-preview" id="filePreview">
+                    <div class="file-info">
+                        <div class="file-details">
+                            <span class="file-icon">📄</span>
+                            <span id="fileName"></span>
+                        </div>
+                        <button type="button" class="remove-btn" onclick="removeFile()">Remove</button>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="submit-btn" id="submitBtn" disabled>
+                Extract Products
+            </button>
+        </form>
+
+        <div class="loading" id="loading">
+            <div class="loading-spinner"></div>
+            <p>Processing your bill... This may take a few moments.</p>
+        </div>
+
+        <div class="error" id="error"></div>
+        <div class="success" id="success"></div>
+
+        <div class="results" id="results">
+            <div class="invoice-info" id="invoiceNumber"></div>
+            <h3>📝 Extracted Products:</h3>
+            <div class="products-list" id="productsList"></div>
+        </div>
+    </div>
+
+    <script>
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const filePreview = document.getElementById('filePreview');
+        const fileName = document.getElementById('fileName');
+        const submitBtn = document.getElementById('submitBtn');
+        const loading = document.getElementById('loading');
+        const error = document.getElementById('error');
+        const success = document.getElementById('success');
+        const results = document.getElementById('results');
+        const productsList = document.getElementById('productsList');
+        const invoiceNumber = document.getElementById('invoiceNumber');
+
+        // Backend API URL
+        const API_URL = 'http://localhost:8000';
+
+        // Handle drag and drop
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFileSelect(files[0]);
+            }
+        });
+
+        // Handle file input change
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFileSelect(e.target.files[0]);
+            }
+        });
+
+        // Handle file selection
+        function handleFileSelect(file) {
+            // Validate file type
+            const allowedTypes = [
+                'application/pdf',
+                'image/jpeg',
+                'image/jpg',
+                'image/png',
+                'image/gif',
+                'image/bmp',
+                'image/tiff'
+            ];
+
+            if (!allowedTypes.includes(file.type)) {
+                showError('Please select a valid file format (PDF, JPG, PNG, GIF, BMP, TIFF)');
+                return;
+            }
+
+            // Validate file size (10MB limit)
+            if (file.size > 10 * 1024 * 1024) {
+                showError('File size must be less than 10MB');
+                return;
+            }
+
+            // Show file preview
+            fileName.textContent = `${file.name} (${formatFileSize(file.size)})`;
+            filePreview.style.display = 'block';
+            submitBtn.disabled = false;
+            
+            // Store file reference
+            fileInput.files = createFileList(file);
+            
+            hideMessages();
+        }
+
+        // Remove file
+        function removeFile() {
+            fileInput.value = '';
+            filePreview.style.display = 'none';
+            submitBtn.disabled = true;
+            results.style.display = 'none';
+            invoiceNumber.textContent = '';
+            hideMessages();
+        }
+
+        // Handle form submission
+        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const file = fileInput.files[0];
+            if (!file) {
+                showError('Please select a file');
+                return;
+            }
+
+            // Show loading
+            loading.style.display = 'block';
+            submitBtn.disabled = true;
+            hideMessages();
+            results.style.display = 'none';
+            invoiceNumber.textContent = '';
+
+            try {
+                const formData = new FormData();
+                formData.append('file', file);
+
+                const response = await fetch(`${API_URL}/upload-bill`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showResults(data);
+                    showSuccess(`Successfully extracted ${data.total_products} products from your bill!`);
+                } else {
+                    showError(data.detail || 'Error processing file');
+                }
+            } catch (err) {
+                console.error('Upload error:', err);
+                showError('Failed to connect to server. Please make sure the backend is running.');
+            } finally {
+                loading.style.display = 'none';
+                submitBtn.disabled = false;
+            }
+        });
+
+        // Show results
+        // Show results
+function showResults(data) {
+    productsList.innerHTML = '';
+    invoiceNumber.textContent = data.invoice_number 
+        ? `Invoice Number: ${data.invoice_number}`
+        : 'Invoice Number: Not found';
+    
+    if (data.products && data.products.length > 0) {
+        data.products.forEach(product => {
+            const productItem = document.createElement('div');
+            productItem.className = 'product-item';
+
+            // Show product name and EcoScore if available
+            productItem.innerHTML = `
+                <strong>${product.name ?? product}</strong><br>
+                EcoScore: <span style="color: green;">${product.eco_score ?? 'N/A'} / 10</span>
+            `;
+
+            productsList.appendChild(productItem);
+        });
+        results.style.display = 'block';
+    } else {
+        showError('No products found in the uploaded bill. Please try with a clearer image.');
+    }
+}
+
+
+        // Utility functions
+        function showError(message) {
+            error.textContent = message;
+            error.style.display = 'block';
+            success.style.display = 'none';
+        }
+
+        function showSuccess(message) {
+            success.textContent = message;
+            success.style.display = 'block';
+            error.style.display = 'none';
+        }
+
+        function hideMessages() {
+            error.style.display = 'none';
+            success.style.display = 'none';
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function createFileList(file) {
+            const dt = new DataTransfer();
+            dt.items.add(file);
+            return dt.files;
+        }
+
+        // Click to upload
+        uploadArea.addEventListener('click', () => {
+            if (!filePreview.style.display || filePreview.style.display === 'none') {
+                fileInput.click();
+            }
+        });
+    </script>
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EcoScore - Bill Upload</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+
+      .container {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        padding: 40px;
+        max-width: 600px;
+        width: 100%;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      .header h1 {
+        color: #333;
+        font-size: 2.5em;
+        margin-bottom: 10px;
+      }
+
+      .header p {
+        color: #666;
+        font-size: 1.1em;
+      }
+
+      .upload-section {
+        margin-bottom: 30px;
+      }
+
+      .upload-area {
+        border: 2px dashed #ccc;
+        border-radius: 10px;
+        padding: 40px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: #fafafa;
+      }
+
+      .upload-area:hover {
+        border-color: #667eea;
+        background: #f0f4ff;
+      }
+
+      .upload-area.dragover {
+        border-color: #667eea;
+        background: #e8f0fe;
+      }
+
+      .upload-icon {
+        font-size: 3em;
+        color: #ccc;
+        margin-bottom: 20px;
+      }
+
+      .upload-text {
+        color: #666;
+        font-size: 1.1em;
+        margin-bottom: 15px;
+      }
+
+      .file-input {
+        display: none;
+      }
+
+      .upload-btn {
+        background: #667eea;
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 25px;
+        font-size: 1em;
+        cursor: pointer;
+        transition: background 0.3s ease;
+      }
+
+      .upload-btn:hover {
+        background: #5a67d8;
+      }
+
+      .file-preview {
+        margin-top: 20px;
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 10px;
+        display: none;
+      }
+
+      .file-info {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .file-details {
+        display: flex;
+        align-items: center;
+      }
+
+      .file-icon {
+        font-size: 1.5em;
+        margin-right: 10px;
+      }
+
+      .remove-btn {
+        background: #e74c3c;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 0.9em;
+      }
+
+      .submit-btn {
+        background: #28a745;
+        color: white;
+        border: none;
+        padding: 15px 40px;
+        border-radius: 25px;
+        font-size: 1.1em;
+        cursor: pointer;
+        width: 100%;
+        margin-top: 20px;
+        transition: background 0.3s ease;
+      }
+
+      .submit-btn:hover {
+        background: #218838;
+      }
+
+      .submit-btn:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+      }
+
+      .loading {
+        display: none;
+        text-align: center;
+        margin-top: 20px;
+      }
+
+      .loading-spinner {
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #667eea;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 15px;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .results {
+        margin-top: 30px;
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 10px;
+        display: none;
+      }
+
+      .results h3 {
+        color: #333;
+        margin-bottom: 15px;
+      }
+
+      .invoice-info {
+        margin-bottom: 15px;
+        font-weight: bold;
+        color: #333;
+      }
+
+      .products-list {
+        display: grid;
+        gap: 10px;
+      }
+
+      .product-item {
+        background: white;
+        padding: 12px;
+        border-radius: 8px;
+        border-left: 4px solid #28a745;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+
+      .error {
+        background: #f8d7da;
+        color: #721c24;
+        padding: 15px;
+        border-radius: 10px;
+        margin-top: 20px;
+        display: none;
+      }
+
+      .success {
+        background: #d4edda;
+        color: #155724;
+        padding: 15px;
+        border-radius: 10px;
+        margin-top: 20px;
+        display: none;
+      }
+
+      .supported-formats {
+        text-align: center;
+        color: #666;
+        font-size: 0.9em;
+        margin-top: 15px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>🌱 EcoScore</h1>
+        <p>
+          Upload your bill to extract product names and invoice number for
+          environmental impact scoring
+        </p>
+      </div>
+
+      <form id="uploadForm">
+        <div class="upload-section">
+          <div class="upload-area" id="uploadArea">
+            <div class="upload-icon">📄</div>
+            <div class="upload-text">
+              <strong>Click to upload</strong> or drag and drop your bill here
+            </div>
+            <button
+              type="button"
+              class="upload-btn"
+              onclick="document.getElementById('fileInput').click()"
+            >
+              Choose File
+            </button>
+            <input
+              type="file"
+              id="fileInput"
+              class="file-input"
+              accept=".pdf,.jpg,.jpeg,.png,.gif,.bmp,.tiff"
+              required
+            />
+          </div>
+
+          <div class="supported-formats">
+            Supported formats: PDF, JPG, PNG, GIF, BMP, TIFF
+          </div>
+
+          <div class="file-preview" id="filePreview">
+            <div class="file-info">
+              <div class="file-details">
+                <span class="file-icon">📄</span>
+                <span id="fileName"></span>
+              </div>
+              <button type="button" class="remove-btn" onclick="removeFile()">
+                Remove
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="submit-btn" id="submitBtn" disabled>
+          Extract Products
+        </button>
+      </form>
+
+      <div class="loading" id="loading">
+        <div class="loading-spinner"></div>
+        <p>Processing your bill... This may take a few moments.</p>
+      </div>
+
+      <div class="error" id="error"></div>
+      <div class="success" id="success"></div>
+
+      <div class="results" id="results">
+        <div class="invoice-info" id="invoiceNumber"></div>
+        <h3>📝 Extracted Products:</h3>
+        <div class="products-list" id="productsList"></div>
+      </div>
+    </div>
+
+    <script>
+      const uploadArea = document.getElementById("uploadArea");
+      const fileInput = document.getElementById("fileInput");
+      const filePreview = document.getElementById("filePreview");
+      const fileName = document.getElementById("fileName");
+      const submitBtn = document.getElementById("submitBtn");
+      const loading = document.getElementById("loading");
+      const error = document.getElementById("error");
+      const success = document.getElementById("success");
+      const results = document.getElementById("results");
+      const productsList = document.getElementById("productsList");
+      const invoiceNumber = document.getElementById("invoiceNumber");
+
+      const API_URL = "http://localhost:8000";
+
+      uploadArea.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        uploadArea.classList.add("dragover");
+      });
+
+      uploadArea.addEventListener("dragleave", () => {
+        uploadArea.classList.remove("dragover");
+      });
+
+      uploadArea.addEventListener("drop", (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove("dragover");
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+          handleFileSelect(files[0]);
+        }
+      });
+
+      fileInput.addEventListener("change", (e) => {
+        if (e.target.files.length > 0) {
+          handleFileSelect(e.target.files[0]);
+        }
+      });
+
+      function handleFileSelect(file) {
+        fileInput.value = ""; // Force reset so same file can be uploaded again
+
+        const allowedTypes = [
+          "application/pdf",
+          "image/jpeg",
+          "image/jpg",
+          "image/png",
+          "image/gif",
+          "image/bmp",
+          "image/tiff",
+        ];
+
+        if (!allowedTypes.includes(file.type)) {
+          showError(
+            "Please select a valid file format (PDF, JPG, PNG, GIF, BMP, TIFF)"
+          );
+          return;
+        }
+
+        if (file.size > 10 * 1024 * 1024) {
+          showError("File size must be less than 10MB");
+          return;
+        }
+
+        fileName.textContent = `${file.name} (${formatFileSize(file.size)})`;
+        filePreview.style.display = "block";
+        submitBtn.disabled = false;
+        fileInput.files = createFileList(file);
+        hideMessages();
+
+        // 🧹 Reset previous results
+        results.style.display = "none";
+        invoiceNumber.textContent = "";
+        productsList.innerHTML = "";
+      }
+
+      function removeFile() {
+        fileInput.value = "";
+        filePreview.style.display = "none";
+        submitBtn.disabled = true;
+        results.style.display = "none";
+        invoiceNumber.textContent = "";
+        productsList.innerHTML = "";
+        hideMessages();
+      }
+
+      document
+        .getElementById("uploadForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const file = fileInput.files[0];
+          if (!file) {
+            showError("Please select a file");
+            return;
+          }
+
+          loading.style.display = "block";
+          submitBtn.disabled = true;
+          hideMessages();
+          results.style.display = "none";
+          invoiceNumber.textContent = "";
+          productsList.innerHTML = "";
+
+          try {
+            const formData = new FormData();
+            formData.append("file", file);
+
+            const response = await fetch(`${API_URL}/upload-bill`, {
+              method: "POST",
+              body: formData,
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+              console.log("Extracted products:", data.products); // ✅ Debug
+              showResults(data);
+              showSuccess(
+                `Successfully extracted ${data.total_products} products from your bill!`
+              );
+            } else {
+              showError(data.detail || "Error processing file");
+            }
+          } catch (err) {
+            console.error("Upload error:", err);
+            showError(
+              "Failed to connect to server. Please make sure the backend is running."
+            );
+          } finally {
+            loading.style.display = "none";
+            submitBtn.disabled = false;
+          }
+        });
+
+      function showResults(data) {
+        productsList.innerHTML = "";
+        invoiceNumber.textContent = data.invoice_number
+          ? `Invoice Number: ${data.invoice_number}`
+          : "Invoice Number: Not found";
+
+        if (data.products && data.products.length > 0) {
+          data.products.forEach((product) => {
+            const productItem = document.createElement("div");
+            productItem.className = "product-item";
+            productItem.textContent = product;
+            productsList.appendChild(productItem);
+          });
+          results.style.display = "block";
+        } else {
+          showError(
+            "No products found in the uploaded bill. Please try with a clearer image."
+          );
+        }
+      }
+
+      function showError(message) {
+        error.textContent = message;
+        error.style.display = "block";
+        success.style.display = "none";
+      }
+
+      function showSuccess(message) {
+        success.textContent = message;
+        success.style.display = "block";
+        error.style.display = "none";
+      }
+
+      function hideMessages() {
+        error.style.display = "none";
+        success.style.display = "none";
+      }
+
+      function formatFileSize(bytes) {
+        if (bytes === 0) return "0 Bytes";
+        const k = 1024;
+        const sizes = ["Bytes", "KB", "MB", "GB"];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+      }
+
+      function createFileList(file) {
+        const dt = new DataTransfer();
+        dt.items.add(file);
+        return dt.files;
+      }
+
+      uploadArea.addEventListener("click", () => {
+        if (
+          !filePreview.style.display ||
+          filePreview.style.display === "none"
+        ) {
+          fileInput.click();
+        }
+      });
+    </script>
+  </body>
+</html>
